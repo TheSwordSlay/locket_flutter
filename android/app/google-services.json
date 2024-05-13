@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552344592869",
+    "project_id": "locket-7084c",
+    "storage_bucket": "locket-7084c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552344592869:android:0d921f6205e0ee01bbcf0c",
+        "android_client_info": {
+          "package_name": "com.example.locket_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWaO7b9ZvN_lbxyn2-E0ljq6xywO_Ryvs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
