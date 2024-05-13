@@ -63,7 +63,6 @@ class _CheckoutState extends State<Checkout> {
             return SingleChildScrollView( 
               child: Container( 
                 width: MediaQuery.of(context).size.width * 1,
-                height: MediaQuery.of(context).size.height,
                 child: Column( 
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -82,6 +81,7 @@ class _CheckoutState extends State<Checkout> {
                       builder: (context, snapshots) {
                         final userDatas = snapshots.data!.data() as Map<String, dynamic>;
                         return ListView.builder(
+                          physics:NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: items.length,
                           itemBuilder: (context, index) {
@@ -129,6 +129,7 @@ class _CheckoutState extends State<Checkout> {
 
                       }
                     ),
+                    SizedBox(height: 30,)
                   ],
                 )
               ),
