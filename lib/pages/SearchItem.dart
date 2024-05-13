@@ -1,7 +1,7 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:locket_flutter/components/shop_item.dart";
+import "package:locket_flutter/connection/auth/LocketAuth.dart";
+import "package:locket_flutter/connection/database/LocketDatabase.dart";
 
 class SearchItem extends StatefulWidget {
   const SearchItem({super.key});
@@ -11,7 +11,7 @@ class SearchItem extends StatefulWidget {
 }
 
 class _SearchItemState extends State<SearchItem> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+  final currentUser = LocketAuth().getCurrentUserInstance();
   final searchStateController = TextEditingController();
 
   String search = "";
@@ -58,14 +58,12 @@ class _SearchItemState extends State<SearchItem> {
             width: MediaQuery.of(context).size.width * 1,
             height: MediaQuery.of(context).size.height * 0.77,
             child: StreamBuilder( 
-                stream: FirebaseFirestore.instance
-                  .collection("ShopItems")
-                  .snapshots(),
+                stream: LocketDatabase().getShopItemsStream(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!.docs;
                     return StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection("Users").doc(currentUser.email).snapshots(),  
+                      stream: LocketAuth().getCurrentUserSnapShot(),  
                       builder: (context, snapshots) {
                         final userData = snapshots.data!.data() as Map<String, dynamic>;
                         return ListView.builder(

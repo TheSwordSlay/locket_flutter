@@ -1,5 +1,3 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:geolocator/geolocator.dart";
 import "package:locket_flutter/components/profile_box.dart";
@@ -9,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import "package:locket_flutter/components/toast.dart";
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart' as geo;
+import "package:locket_flutter/connection/auth/LocketAuth.dart";
 
 
 class Account extends StatefulWidget {
@@ -21,10 +20,10 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
   // user
-  final currentUser = FirebaseAuth.instance.currentUser!;
+  final currentUser = LocketAuth().getCurrentUserInstance();
 
-  // all users
-  final usersCollection = FirebaseFirestore.instance.collection("Users");
+  // // all users
+  // final usersCollection = FirebaseFirestore.instance.collection("Users");
 
   String buttonTextCurrentLocation = "Use current location";
 
@@ -72,7 +71,7 @@ class _AccountState extends State<Account> {
 
     // update firestore
     if (newValue.trim().length > 0) {
-      await usersCollection.doc(currentUser.email).update({field: newValue});
+      await LocketAuth().updateUserData(field, newValue);
     }
   }
 
@@ -115,7 +114,7 @@ class _AccountState extends State<Account> {
 
     // update firestore
     if (newValue.trim().length > 0) {
-      await usersCollection.doc(currentUser.email).update({field: newValue});
+      await LocketAuth().updateUserData(field, newValue);
     }
   }
 
@@ -131,8 +130,8 @@ class _AccountState extends State<Account> {
           icon: const Icon(Icons.logout))
         ],
       ),
-      body: StreamBuilder<DocumentSnapshot>( 
-        stream: FirebaseFirestore.instance.collection("Users").doc(currentUser.email).snapshots(),
+      body: StreamBuilder( 
+        stream: LocketAuth().getCurrentUserSnapShot(),
         builder: (context, snapshot) {
           if(snapshot.hasData) {
             final userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -268,9 +267,9 @@ class _AccountState extends State<Account> {
           position.latitude, position.longitude)
       .then((List<Placemark> placemarks) {
     Placemark place = placemarks[0];
-    usersCollection.doc(currentUser.email).update({"homeLat": position.latitude});
-    usersCollection.doc(currentUser.email).update({"homeLong": position.longitude});
-    usersCollection.doc(currentUser.email).update({"homeLoc": '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}'});
+    LocketAuth().updateUserData("homeLat", position.latitude);
+    LocketAuth().updateUserData("homeLong", position.longitude);
+    LocketAuth().updateUserData("homeLoc", '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}');
     setState(() {
       _isButtonDisabled = false;
       buttonTextCurrentLocation = "Use current location";
@@ -286,9 +285,9 @@ class _AccountState extends State<Account> {
     locationFromAddress(location);
 
     var place = addresses.first;
-    await usersCollection.doc(currentUser.email).update({"homeLat": place.latitude});
-    await usersCollection.doc(currentUser.email).update({"homeLong": place.longitude});
-    await usersCollection.doc(currentUser.email).update({"homeLoc": location});
+    await LocketAuth().updateUserData("homeLat", place.latitude);
+    await LocketAuth().updateUserData("homeLong", place.longitude);
+    await LocketAuth().updateUserData("homeLoc", location);
   }
 
 

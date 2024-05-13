@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:locket_flutter/components/cashier_item.dart';
+import 'package:locket_flutter/connection/auth/LocketAuth.dart';
+import 'package:locket_flutter/connection/database/LocketDatabase.dart';
 
 class CashierPage extends StatefulWidget {
   const CashierPage({super.key});
@@ -12,7 +12,7 @@ class CashierPage extends StatefulWidget {
 
 class _CashierPageState extends State<CashierPage> {
   void signOut() {
-    FirebaseAuth.instance.signOut();
+    LocketAuth().signOut();
   }
 
   @override
@@ -30,7 +30,7 @@ class _CashierPageState extends State<CashierPage> {
       ),
       backgroundColor: const Color(0xffd9d9d9),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("Orders").snapshots(), 
+        stream: LocketDatabase().getOrdersDataStream(), 
         builder: (context, snapshot) {
           if(snapshot.hasData) {
             final item = snapshot.data!.docs;

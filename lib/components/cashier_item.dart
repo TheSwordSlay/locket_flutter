@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:locket_flutter/connection/database/LocketDatabase.dart';
 import 'package:locket_flutter/util/currency_formatter.dart';
 
 class CashierItem extends StatelessWidget {
@@ -8,26 +8,6 @@ class CashierItem extends StatelessWidget {
   final String nama;
   final int total;
   const CashierItem({super.key, required this.email, required this.items, required this.nama, required this.total});
-
-  Future<void> finishOrder(String emailTarget) async {
-    FirebaseFirestore.instance
-      .collection("Users")
-      .doc(emailTarget)
-      .update({
-        'isOrdering': false
-      });
-    FirebaseFirestore.instance
-      .collection("Checkout")
-      .doc(emailTarget)
-      .update({
-        'items': [],
-        'total': 0
-      });
-    FirebaseFirestore.instance
-      .collection("Orders")
-      .doc(emailTarget)
-      .delete();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +62,7 @@ class CashierItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: ElevatedButton(
                   onPressed: () {
-                    finishOrder(email);
+                    LocketDatabase().finishOrder(email);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffffaf36),

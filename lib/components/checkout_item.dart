@@ -1,5 +1,5 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
+import "package:locket_flutter/connection/database/LocketDatabase.dart";
 import "package:locket_flutter/util/currency_formatter.dart";
 
 class CheckoutItem extends StatefulWidget {
@@ -16,16 +16,14 @@ class CheckoutItem extends StatefulWidget {
 }
 
 class _CheckoutItemState extends State<CheckoutItem> {
-  final checkoutCollection = FirebaseFirestore.instance.collection("Checkout");
-  final shopCollection = FirebaseFirestore.instance.collection("ShopItems");
   bool enableButton = true;
 
   Future<void> delete() async {
     setState(() {
       enableButton = false;
     });
-    var docSnapshot = await checkoutCollection.doc(widget.email).get();
-    var shopSnapshot = await shopCollection.doc(widget.nama).get();
+    var docSnapshot = await LocketDatabase().getCheckoutItemsData(widget.email);
+    var shopSnapshot = await LocketDatabase().getShopItemData(widget.nama);
     Map<String, dynamic> data = shopSnapshot.data()!;
     var jumlahItem = data['stock'];
 
@@ -39,13 +37,20 @@ class _CheckoutItemState extends State<CheckoutItem> {
           if(value[i]["nama"] == widget.nama) {
             int amountBefore = value[i]["amount"];
             value.removeAt(i);
-            checkoutCollection.doc(widget.email).update(
+            LocketDatabase().updateCheckoutData(widget.email,               
               {
                 "items": value,
                 "total": totalBefore-(widget.amount*widget.harga)
               }
             );
-            shopCollection.doc(widget.nama).update({"stock": jumlahItem+amountBefore});
+            LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem+amountBefore);
+            // checkoutCollection.doc(widget.email).update(
+            //   {
+            //     "items": value,
+            //     "total": totalBefore-(widget.amount*widget.harga)
+            //   }
+            // );
+            // shopCollection.doc(widget.nama).update({"stock": jumlahItem+amountBefore});
           }
         }
         setState(() {
@@ -60,8 +65,8 @@ class _CheckoutItemState extends State<CheckoutItem> {
     setState(() {
       enableButton = false;
     });
-    var docSnapshot = await checkoutCollection.doc(widget.email).get();
-    var shopSnapshot = await shopCollection.doc(widget.nama).get();
+    var docSnapshot = await LocketDatabase().getCheckoutItemsData(widget.email);
+    var shopSnapshot = await LocketDatabase().getShopItemData(widget.nama);
     Map<String, dynamic> data = shopSnapshot.data()!;
     var jumlahItem = data['stock'];
     if(jumlahItem > 0) {
@@ -80,22 +85,36 @@ class _CheckoutItemState extends State<CheckoutItem> {
                 "amount": amountBefore - 1,
                 "imgLink": widget.imageLink
               };
-              checkoutCollection.doc(widget.email).update(
+              LocketDatabase().updateCheckoutData(widget.email,                 
                 {
                   "items": value,
                   "total": totalBefore - widget.harga
                 }
               );
-              shopCollection.doc(widget.nama).update({"stock": jumlahItem+1});
+              LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem+1);
+              // checkoutCollection.doc(widget.email).update(
+              //   {
+              //     "items": value,
+              //     "total": totalBefore - widget.harga
+              //   }
+              // );
+              // shopCollection.doc(widget.nama).update({"stock": jumlahItem+1});
             } else {
               value.removeAt(i);
-              checkoutCollection.doc(widget.email).update(
+              LocketDatabase().updateCheckoutData(widget.email,                 
                 {
                   "items": value,
                   "total": totalBefore - widget.harga
                 }
               );
-              shopCollection.doc(widget.nama).update({"stock": jumlahItem+1});
+              LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem+1);
+              // checkoutCollection.doc(widget.email).update(
+              //   {
+              //     "items": value,
+              //     "total": totalBefore - widget.harga
+              //   }
+              // );
+              // shopCollection.doc(widget.nama).update({"stock": jumlahItem+1});
             }
 
             

@@ -1,6 +1,6 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:locket_flutter/components/toast.dart";
+import "package:locket_flutter/connection/database/LocketDatabase.dart";
 import "package:locket_flutter/util/currency_formatter.dart";
 
 class ShopItem extends StatefulWidget {
@@ -19,12 +19,12 @@ class ShopItem extends StatefulWidget {
 }
 
 class _ShopItemState extends State<ShopItem> {
-  final checkoutCollection = FirebaseFirestore.instance.collection("Checkout");
-  final shopCollection = FirebaseFirestore.instance.collection("ShopItems");
 
   Future<void> inputData(int amount) async {
-    var docSnapshot = await checkoutCollection.doc(widget.email).get();
-    var shopSnapshot = await shopCollection.doc(widget.nama).get();
+    var docSnapshot = await LocketDatabase().getCheckoutItemsData(widget.email);
+    // checkoutCollection.doc(widget.email).get();
+    var shopSnapshot = await LocketDatabase().getShopItemData(widget.nama);
+    // shopCollection.doc(widget.nama).get();
     Map<String, dynamic> data = shopSnapshot.data()!;
     var jumlahItem = data['stock'];
 
@@ -48,13 +48,20 @@ class _ShopItemState extends State<ShopItem> {
                 "amount": amountBefore + amount,
                 "imgLink": widget.imageLink
               };
-              checkoutCollection.doc(widget.email).update(
+              LocketDatabase().updateCheckoutData(widget.email, 
                 {
                   "items": value,
                   "total": totalBefore+ (amount*widget.harga)
                 }
               );
-              shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
+              LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem-amount);
+              // checkoutCollection.doc(widget.email).update(
+              //   {
+              //     "items": value,
+              //     "total": totalBefore+ (amount*widget.harga)
+              //   }
+              // );
+              // shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
               needSet = false;
             }
           }
@@ -69,20 +76,27 @@ class _ShopItemState extends State<ShopItem> {
                   "amount": amount,
                   "imgLink": widget.imageLink
                 }];
-            checkoutCollection.doc(widget.email).set(
+            LocketDatabase().updateCheckoutData(widget.email,               
               {
                 "items": newValue,
                 "total": totalBefore+(amount*widget.harga)
               }
             );
-            shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
+            LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem-amount);
+            // checkoutCollection.doc(widget.email).set(
+            //   {
+            //     "items": newValue,
+            //     "total": totalBefore+(amount*widget.harga)
+            //   }
+            // );
+            // shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
           }
         }
       } else {
         if(amount>jumlahItem) {
           showToast(message: "The item doesn't have enough stock");
         } else {
-          checkoutCollection.doc(widget.email).set(
+          LocketDatabase().updateCheckoutData(widget.email,             
             {
               "items": [{
                 "nama": widget.nama,
@@ -93,7 +107,19 @@ class _ShopItemState extends State<ShopItem> {
               "total": (amount*widget.harga)
             }
           );
-          shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
+          LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem-amount);
+          // checkoutCollection.doc(widget.email).set(
+          //   {
+          //     "items": [{
+          //       "nama": widget.nama,
+          //       "harga": widget.harga,
+          //       "amount": amount,
+          //       "imgLink": widget.imageLink
+          //     }],
+          //     "total": (amount*widget.harga)
+          //   }
+          // );
+          // shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
         }
 
       }

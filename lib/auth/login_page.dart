@@ -2,6 +2,7 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:locket_flutter/components/button.dart";
 import "package:locket_flutter/components/text_field.dart";
+import "package:locket_flutter/connection/auth/LocketAuth.dart";
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -25,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailTextController.text, password: passwordTextController.text);
+      await LocketAuth().signIn(emailTextController.text, passwordTextController.text);
 
       // pop loading circle
       if(context.mounted){

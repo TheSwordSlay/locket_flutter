@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:firebase_auth/firebase_auth.dart";
 import "package:locket_flutter/components/checkout_item.dart";
 import "package:locket_flutter/components/toast.dart";
+import "package:locket_flutter/connection/auth/LocketAuth.dart";
+import "package:locket_flutter/connection/database/LocketDatabase.dart";
 import "package:locket_flutter/util/currency_formatter.dart";
 
 class Checkout extends StatefulWidget {
@@ -13,7 +13,7 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+  final currentUser = LocketAuth().getCurrentUserInstance();
   bool buttonEnable = true;
 
   Future<void> order(List items, String nama, int total, bool isThereItems) async {
@@ -21,21 +21,15 @@ class _CheckoutState extends State<Checkout> {
       setState(() {
         buttonEnable = false;
       });
-      FirebaseFirestore.instance
-        .collection("Orders")
-        .doc(currentUser.email)
-        .set({
+      LocketDatabase().updateOrderData(currentUser.email, 
+        {
           'nama' : nama,
           'email' : currentUser.email,
           'items' : items,
           'total' : total
-        });
-      FirebaseFirestore.instance
-        .collection("Users")
-        .doc(currentUser.email)
-        .update({
-          'isOrdering': true
-        });
+        }
+      );
+      LocketAuth().updateUserData("isOrdering", true);
       setState(() {
         buttonEnable = true;
       });
@@ -55,7 +49,7 @@ class _CheckoutState extends State<Checkout> {
       ),
       backgroundColor: const Color(0xffd9d9d9),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("Checkout").doc(currentUser.email).snapshots(),
+        stream: LocketDatabase().getCheckoutItemsStream(currentUser.email),
         builder: (context, snapshot) {
           if(snapshot.hasData) {
             final checkOutData = snapshot.data!.data() as Map<String, dynamic>;
@@ -77,7 +71,7 @@ class _CheckoutState extends State<Checkout> {
                       ),
                     ),
                     StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection("Users").doc(currentUser.email).snapshots(), 
+                      stream: LocketAuth().getCurrentUserSnapShot(), 
                       builder: (context, snapshots) {
                         final userDatas = snapshots.data!.data() as Map<String, dynamic>;
                         return ListView.builder(
@@ -105,7 +99,7 @@ class _CheckoutState extends State<Checkout> {
                     ),
                     const SizedBox(height: 20,),
                     StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection("Users").doc(currentUser.email).snapshots(), 
+                      stream:LocketAuth().getCurrentUserSnapShot(), 
                       builder: (context, snapshots) {
                         final userData = snapshots.data!.data() as Map<String, dynamic>;
                         return Center( 

@@ -2,6 +2,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:locket_flutter/auth/login_or_register.dart";
+import "package:locket_flutter/connection/auth/LocketAuth.dart";
 import "package:locket_flutter/pages/CashierPage.dart";
 import "package:locket_flutter/pages/Homepage.dart";
 
@@ -12,7 +13,7 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold( 
       body: StreamBuilder( 
-        stream: FirebaseAuth.instance.authStateChanges(),
+        stream: LocketAuth().getAuthState(),
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {

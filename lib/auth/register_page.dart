@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:locket_flutter/components/button.dart';
 import 'package:locket_flutter/components/text_field.dart';
+import 'package:locket_flutter/connection/auth/LocketAuth.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -33,29 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       // try register
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailTextController.text, password: passwordTextController.text);
-
-      // create new doc in firebase
-      FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userCredential.user!.email)
-        .set({
-          'username' : emailTextController.text.split('@')[0],
-          'handphone' : 'Not set',
-          'homeLat' : 0.0,
-          'homeLong' : 0.0,
-          'homeLoc' : 'Not set',
-          'isCashier' : false,
-          'isOrdering' : false
-        });
-
-      FirebaseFirestore.instance
-        .collection("Checkout")
-        .doc(userCredential.user!.email)
-        .set({
-          'items' : [],
-          'total' : 0
-        });
+      LocketAuth().signUp(emailTextController.text, passwordTextController.text);
 
       if(context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {

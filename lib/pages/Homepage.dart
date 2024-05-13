@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:locket_flutter/connection/auth/LocketAuth.dart';
 import 'package:locket_flutter/pages/Account.dart';
 import 'package:locket_flutter/pages/Checkout.dart';
 import 'package:locket_flutter/pages/LandingPage.dart';
@@ -18,7 +18,7 @@ class _HomepageState extends State<Homepage> {
   int _currentIndex = 0;
 
   static void signOut() {
-    FirebaseAuth.instance.signOut();
+    LocketAuth().signOut();
   }
 
   void goToSearchs() {
