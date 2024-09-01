@@ -9,7 +9,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import "package:locket_flutter/connection/auth/LocketAuth.dart";
 
-
 class Account extends StatefulWidget {
   final Function()? signOut;
   const Account({super.key, required this.signOut});
@@ -33,41 +32,33 @@ class _AccountState extends State<Account> {
   Future<void> editFieldNumber(String field, String name) async {
     String newValue = "";
     await showDialog(
-      context: context,
-      builder: (context) => AlertDialog( 
-        title: Text(
-          "Edit " + name,
-          style: const TextStyle( 
-            fontSize: 20
-          ),
-        ),
-        content: TextField( 
-          autofocus: true,
-          decoration: InputDecoration( 
-            hintText: "Enter new ${name}"
-          ),
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onChanged: (value) {
-            newValue = value;
-          },
-        ),
-        actions: [ 
-          // cancel
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context),
-              newValue = ""
-            }, 
-            child: const Text('Cancel')),
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(
+                "Edit " + name,
+                style: const TextStyle(fontSize: 20),
+              ),
+              content: TextField(
+                autofocus: true,
+                decoration: InputDecoration(hintText: "Enter new ${name}"),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onChanged: (value) {
+                  newValue = value;
+                },
+              ),
+              actions: [
+                // cancel
+                TextButton(
+                    onPressed: () => {Navigator.pop(context), newValue = ""},
+                    child: const Text('Cancel')),
 
-          // save
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(newValue), 
-            child: const Text('Save')),
-        ],
-      )
-    );
+                // save
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(newValue),
+                    child: const Text('Save')),
+              ],
+            ));
 
     // update firestore
     if (newValue.trim().length > 0) {
@@ -78,39 +69,31 @@ class _AccountState extends State<Account> {
   Future<void> editField(String field, String name) async {
     String newValue = "";
     await showDialog(
-      context: context,
-      builder: (context) => AlertDialog( 
-        title: Text(
-          "Edit " + name,
-          style: const TextStyle( 
-            fontSize: 20
-          ),
-        ),
-        content: TextField( 
-          autofocus: true,
-          decoration: InputDecoration( 
-            hintText: "Enter new ${name}"
-          ),
-          onChanged: (value) {
-            newValue = value;
-          },
-        ),
-        actions: [ 
-          // cancel
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context),
-              newValue = ""
-            }, 
-            child: const Text('Cancel')),
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(
+                "Edit " + name,
+                style: const TextStyle(fontSize: 20),
+              ),
+              content: TextField(
+                autofocus: true,
+                decoration: InputDecoration(hintText: "Enter new ${name}"),
+                onChanged: (value) {
+                  newValue = value;
+                },
+              ),
+              actions: [
+                // cancel
+                TextButton(
+                    onPressed: () => {Navigator.pop(context), newValue = ""},
+                    child: const Text('Cancel')),
 
-          // save
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(newValue), 
-            child: const Text('Save')),
-        ],
-      )
-    );
+                // save
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(newValue),
+                    child: const Text('Save')),
+              ],
+            ));
 
     // update firestore
     if (newValue.trim().length > 0) {
@@ -118,127 +101,133 @@ class _AccountState extends State<Account> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Account"), 
+        title: const Text("Account"),
         // backgroundColor: Colors.blue,
         actions: [
-          IconButton(onPressed: widget.signOut, 
-          icon: const Icon(Icons.logout))
+          IconButton(onPressed: widget.signOut, icon: const Icon(Icons.logout))
         ],
       ),
-      body: StreamBuilder( 
+      body: StreamBuilder(
         stream: LocketAuth().getCurrentUserSnapShot(),
         builder: (context, snapshot) {
-          if(snapshot.hasData) {
-            final userData = snapshot.data!.data() as Map<String, dynamic>;
+          if (snapshot.hasData) {
+            if (snapshot.data != null) {
+              final userData = snapshot.data!.data() as Map<String, dynamic>;
 
-            return Center(
-              child: Column( 
+              return Center(
+                  child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [ 
-                  const Icon(
-                    Icons.person,
-                    size: 72
-                  ),
-
+                children: [
+                  const Icon(Icons.person, size: 72),
                   Text(
                     currentUser.email!,
-                    style: const TextStyle( 
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20
-                    ),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  
-                  const SizedBox(height: 20,),
-
+                  const SizedBox(
+                    height: 20,
+                  ),
                   ProfileBox(
-                    text: userData['username'], 
+                    text: userData['username'],
                     sectionName: 'Name',
                     onPressed: () => editField('username', 'name'),
                     isShowButton: true,
                   ),
-
                   ProfileBox(
-                    text: userData['handphone'], 
+                    text: userData['handphone'],
                     sectionName: 'Handphone number',
-                    onPressed: () => editFieldNumber('handphone', 'handphone number'),
+                    onPressed: () =>
+                        editFieldNumber('handphone', 'handphone number'),
                     isShowButton: true,
                   ),
-
                   ProfileBox(
-                    text: userData['homeLoc'], 
+                    text: userData['homeLoc'],
                     sectionName: 'Order location',
                     onPressed: () => editField('homeLoc', 'order location'),
                     isShowButton: false,
                   ),
-
-                  const SizedBox(height: 20,),
-
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center, 
-                    children: [ 
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       ElevatedButton(
                         onPressed: () async {
                           Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PlacePicker(
-                                    apiKey: 'AIzaSyCb6frJQNMU4MdfXeYZtwkYrUa4gq00F-M',
-                                    onPlacePicked: (result) { 
-                                      _setHomeLoc(result.formattedAddress!);
-                                      Navigator.of(context).pop();
-                                    },
-                                    initialPosition: const LatLng(29.146727, 76.464895),
-                                    useCurrentLocation: true,
-                                    resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
-                                  ),
-                                ),
-                              );
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlacePicker(
+                                apiKey:
+                                    'AIzaSyCb6frJQNMU4MdfXeYZtwkYrUa4gq00F-M',
+                                onPlacePicked: (result) {
+                                  _setHomeLoc(result.formattedAddress!);
+                                  Navigator.of(context).pop();
+                                },
+                                initialPosition:
+                                    const LatLng(29.146727, 76.464895),
+                                useCurrentLocation: true,
+                                resizeToAvoidBottomInset:
+                                    false, // only works in page mode, less flickery, remove if wrong offsets
+                              ),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xffffaf36),
-                          fixedSize: Size(MediaQuery.of(context).size.width * 0.40, 10),
+                          fixedSize: Size(
+                              MediaQuery.of(context).size.width * 0.40, 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(7.0),
                           ),
                         ),
-                        child: const Text('Location picker', maxLines: 1, style: TextStyle( 
-                          color: Colors.white
-                        ),),
-                        
+                        child: const Text(
+                          'Location picker',
+                          maxLines: 1,
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      const SizedBox(width: 10,),
+                      const SizedBox(
+                        width: 10,
+                      ),
                       ElevatedButton(
-                        onPressed: _isButtonDisabled ? null : _getCurrentPosition,
+                        onPressed:
+                            _isButtonDisabled ? null : _getCurrentPosition,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xffffaf36),
-                          fixedSize: Size(MediaQuery.of(context).size.width * 0.45, 10),
+                          fixedSize: Size(
+                              MediaQuery.of(context).size.width * 0.45, 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(7.0),
                           ),
                         ),
-                        child: Text(buttonTextCurrentLocation, maxLines: 1, style: const TextStyle( 
-                          color: Colors.white
-                        ),),
-                        
+                        child: Text(
+                          buttonTextCurrentLocation,
+                          maxLines: 1,
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 72,)
+                  const SizedBox(
+                    height: 72,
+                  )
                 ],
-              )
+              ));
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          } else if(snapshot.hasError) {
+          } else if (snapshot.hasError) {
             return Center(
               child: Text("Error ${snapshot.error}"),
             );
           }
-          return const Center( 
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },
@@ -253,8 +242,7 @@ class _AccountState extends State<Account> {
     });
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high)
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       _saveLocFromLatLng(position);
     }).catchError((e) {
@@ -263,26 +251,24 @@ class _AccountState extends State<Account> {
   }
 
   Future<void> _saveLocFromLatLng(Position position) async {
-  await placemarkFromCoordinates(
-          position.latitude, position.longitude)
-      .then((List<Placemark> placemarks) {
-    Placemark place = placemarks[0];
-    LocketAuth().updateUserData("homeLat", position.latitude);
-    LocketAuth().updateUserData("homeLong", position.longitude);
-    LocketAuth().updateUserData("homeLoc", '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}');
-    setState(() {
-      _isButtonDisabled = false;
-      buttonTextCurrentLocation = "Use current location";
+    await placemarkFromCoordinates(position.latitude, position.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      LocketAuth().updateUserData("homeLat", position.latitude);
+      LocketAuth().updateUserData("homeLong", position.longitude);
+      LocketAuth().updateUserData("homeLoc",
+          '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}');
+      setState(() {
+        _isButtonDisabled = false;
+        buttonTextCurrentLocation = "Use current location";
+      });
+    }).catchError((e) {
+      debugPrint(e);
     });
-  }).catchError((e) {
-    debugPrint(e);
-  });
- }
+  }
 
-  Future<void> _setHomeLoc(String location) async
-  {
-    List<geo.Location> addresses = await 
-    locationFromAddress(location);
+  Future<void> _setHomeLoc(String location) async {
+    List<geo.Location> addresses = await locationFromAddress(location);
 
     var place = addresses.first;
     await LocketAuth().updateUserData("homeLat", place.latitude);
@@ -290,26 +276,29 @@ class _AccountState extends State<Account> {
     await LocketAuth().updateUserData("homeLoc", location);
   }
 
-
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
-    
+
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      showToast(message: 'Location services are disabled. Please enable the services');
+      showToast(
+          message:
+              'Location services are disabled. Please enable the services');
       return false;
     }
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {   
+      if (permission == LocationPermission.denied) {
         showToast(message: 'Location permissions are denied');
         return false;
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      showToast(message: 'Location permissions are permanently denied, we cannot request permissions.');
+      showToast(
+          message:
+              'Location permissions are permanently denied, we cannot request permissions.');
       return false;
     }
     return true;

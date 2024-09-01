@@ -65,24 +65,29 @@ class _SearchItemState extends State<SearchItem> {
                     return StreamBuilder(
                       stream: LocketAuth().getCurrentUserSnapShot(),  
                       builder: (context, snapshots) {
-                        final userData = snapshots.data!.data() as Map<String, dynamic>;
-                        return ListView.builder(
-                          itemCount: item.length,
-                          itemBuilder: (context, index) {
-                            if(item[index]['nama'].toLowerCase().replaceAll(' ', '').contains(search.toLowerCase().replaceAll(' ', ''))) {
-                              return ShopItem(
-                                harga: item[index]['harga'], 
-                                imageLink: item[index]['imageLink'], 
-                                nama: item[index]['nama'], 
-                                satuan: item[index]['satuan'], 
-                                stock: item[index]['stock'], 
-                                tipe: item[index]['tipe'],
-                                email: currentUser.email!,
-                                isOrdering: userData['isOrdering'],
-                              );
+                        if(snapshots.data != null) {
+                          final userData = snapshots.data!.data() as Map<String, dynamic>;
+                          return ListView.builder(
+                            itemCount: item.length,
+                            itemBuilder: (context, index) {
+                              if(item[index]['nama'].toLowerCase().replaceAll(' ', '').contains(search.toLowerCase().replaceAll(' ', ''))) {
+                                return ShopItem(
+                                  harga: item[index]['harga'], 
+                                  imageLink: item[index]['imageLink'], 
+                                  nama: item[index]['nama'], 
+                                  satuan: item[index]['satuan'], 
+                                  stock: item[index]['stock'], 
+                                  tipe: item[index]['tipe'],
+                                  email: currentUser.email!,
+                                  isOrdering: userData['isOrdering'],
+                                );
+                              }
+                              return const SizedBox(height: 0, width: 0,);
                             }
-                            return const SizedBox(height: 0, width: 0,);
-                          }
+                          );
+                        }
+                        return const Center(
+                          child: CircularProgressIndicator(),
                         );
                       });
 

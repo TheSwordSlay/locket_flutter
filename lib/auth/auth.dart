@@ -11,24 +11,32 @@ class AuthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( 
-      body: StreamBuilder( 
+    return Scaffold(
+      body: StreamBuilder(
         stream: LocketAuth().getAuthState(),
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
             final currentUser = FirebaseAuth.instance.currentUser!;
             return StreamBuilder(
-              stream: FirebaseFirestore.instance.collection("Users").doc(currentUser.email).snapshots(), 
-              builder: (context, snapshots) {
-                final userDatas = snapshots.data!.data() as Map<String, dynamic>;
-                if(userDatas['isCashier']) {
-                  return const CashierPage();
-                } else {
-                  return const Homepage();
-                }
-              }
-            );
+                stream: FirebaseFirestore.instance
+                    .collection("Users")
+                    .doc(currentUser.email)
+                    .snapshots(),
+                builder: (context, snapshots) {
+                  if (snapshots.data != null) {
+                    final userDatas =
+                        snapshots.data!.data() as Map<String, dynamic>;
+                    if (userDatas['isCashier']) {
+                      return const CashierPage();
+                    } else {
+                      return const Homepage();
+                    }
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                });
           }
           // not logged in
           else {

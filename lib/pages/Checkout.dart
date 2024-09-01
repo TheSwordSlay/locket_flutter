@@ -73,17 +73,23 @@ class _CheckoutState extends State<Checkout> {
                     StreamBuilder(
                       stream: LocketAuth().getCurrentUserSnapShot(), 
                       builder: (context, snapshots) {
-                        final userDatas = snapshots.data!.data() as Map<String, dynamic>;
-                        return ListView.builder(
-                          physics:NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            if(items[index]['amount'] > 0) {
-                              return CheckoutItem(harga: items[index]['harga'], imageLink: items[index]['imgLink'], nama: items[index]['nama'], amount: items[index]['amount'], email: currentUser.email!, isOrdering: userDatas['isOrdering'],);
+                        if (snapshots.data != null) {
+                          final userDatas = snapshots.data!.data() as Map<String, dynamic>;
+                          return ListView.builder(
+                            physics:NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              if(items[index]['amount'] > 0) {
+                                return CheckoutItem(harga: items[index]['harga'], imageLink: items[index]['imgLink'], nama: items[index]['nama'], amount: items[index]['amount'], email: currentUser.email!, isOrdering: userDatas['isOrdering'],);
+                              }
+                              return const SizedBox(width: 0, height: 0,);
                             }
-                            return const SizedBox(width: 0, height: 0,);
-                          }
+                          );
+
+                        }
+                        return const Center(
+                          child: CircularProgressIndicator(),
                         );
                       }
                     ),
@@ -101,6 +107,11 @@ class _CheckoutState extends State<Checkout> {
                     StreamBuilder(
                       stream:LocketAuth().getCurrentUserSnapShot(), 
                       builder: (context, snapshots) {
+                        if(snapshots.data == null) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
                         final userData = snapshots.data!.data() as Map<String, dynamic>;
                         return Center( 
                           child: ElevatedButton(
