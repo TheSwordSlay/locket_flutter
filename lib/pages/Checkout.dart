@@ -16,23 +16,31 @@ class _CheckoutState extends State<Checkout> {
   final currentUser = LocketAuth().getCurrentUserInstance();
   bool buttonEnable = true;
 
-  Future<void> order(List items, String nama, int total, bool isThereItems) async {
+  Future<void> order(List items, String nama, int total, bool isThereItems, String handphone, String loc, double lat, double long) async {
+
     if (isThereItems) {
-      setState(() {
-        buttonEnable = false;
-      });
-      LocketDatabase().updateOrderData(currentUser.email, 
-        {
-          'nama' : nama,
-          'email' : currentUser.email,
-          'items' : items,
-          'total' : total
-        }
-      );
-      LocketAuth().updateUserData("isOrdering", true);
-      setState(() {
-        buttonEnable = true;
-      });
+      if (handphone == "Not set" || loc == "Not set") {
+        showToast(message: "Can't place order when order location or handphone is not set, set it on the profile page");
+      } else {
+        setState(() {
+          buttonEnable = false;
+        });
+        LocketDatabase().updateOrderData(currentUser.email, 
+          {
+            'nama' : nama,
+            'email' : currentUser.email,
+            'items' : items,
+            'total' : total,
+            'handphone' : handphone,
+            'lat'   : lat,
+            'long'  : long
+          }
+        );
+        LocketAuth().updateUserData("isOrdering", true);
+        setState(() {
+          buttonEnable = true;
+        });
+      }
     }
     else {
       showToast(message: "Cant place order if checkout list is empty");
@@ -116,7 +124,7 @@ class _CheckoutState extends State<Checkout> {
                         return Center( 
                           child: ElevatedButton(
                             onPressed: userData['isOrdering'] || !buttonEnable ? null : (){
-                              order(items, userData['username'], checkOutData['total'], items.length > 0);
+                              order(items, userData['username'], checkOutData['total'], items.length > 0, userData['handphone'], userData['homeLoc'], userData['homeLat'], userData['homeLong']);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xffffaf36),

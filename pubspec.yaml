@@ -23,7 +23,10 @@ dependencies:
   another_carousel_pro: ^1.0.2
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.3.10
-
+  flutter_polyline_points: ^2.1.0
+  location: ^7.0.0
+  http: ^1.2.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

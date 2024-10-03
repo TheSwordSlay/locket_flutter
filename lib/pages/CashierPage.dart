@@ -48,6 +48,9 @@ class _CashierPageState extends State<CashierPage> {
                         items: item[index]['items'],
                         nama: item[index]['nama'],
                         total: item[index]['total'],
+                        handphone: item[index]['handphone'],
+                        lat: item[index]['lat'],
+                        long: item[index]['long']
                       );
                     });
               }

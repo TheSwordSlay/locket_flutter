@@ -6,7 +6,6 @@ import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:geocoding/geocoding.dart';
 import "package:locket_flutter/components/toast.dart";
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart' as geo;
 import "package:locket_flutter/connection/auth/LocketAuth.dart";
 
 class Account extends StatefulWidget {
@@ -165,7 +164,7 @@ class _AccountState extends State<Account> {
                                 apiKey:
                                     'AIzaSyCb6frJQNMU4MdfXeYZtwkYrUa4gq00F-M',
                                 onPlacePicked: (result) {
-                                  _setHomeLoc(result.formattedAddress!);
+                                  _setHomeLoc(result.formattedAddress!, result.geometry!.location.lat, result.geometry!.location.lng);
                                   Navigator.of(context).pop();
                                 },
                                 initialPosition:
@@ -267,12 +266,9 @@ class _AccountState extends State<Account> {
     });
   }
 
-  Future<void> _setHomeLoc(String location) async {
-    List<geo.Location> addresses = await locationFromAddress(location);
-
-    var place = addresses.first;
-    await LocketAuth().updateUserData("homeLat", place.latitude);
-    await LocketAuth().updateUserData("homeLong", place.longitude);
+  Future<void> _setHomeLoc(String location, lati, longi) async {
+    await LocketAuth().updateUserData("homeLat", lati);
+    await LocketAuth().updateUserData("homeLong", longi);
     await LocketAuth().updateUserData("homeLoc", location);
   }
 
