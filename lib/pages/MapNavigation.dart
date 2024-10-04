@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:locket_flutter/components/toast.dart';
 
@@ -19,37 +19,46 @@ class _MapNavigationState extends State<MapNavigation> {
   final Completer<GoogleMapController> _controller = Completer();
   
   List<LatLng> polylineCoordinates = [];
-  LocationData? currentLocation;
+  // LocationData? currentLocation;
   LatLng? sourceLocation;
+  Position? currentLocation;
+  StreamSubscription<Position>? _positionStream;
 
   BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
 
   void getCurrentLocation() async {
-    Location location = Location();
-
-    location.getLocation().then((location) {
-      setState(() {
-        currentLocation = location;
-        sourceLocation = LatLng(location.latitude!, location.longitude!);
-      });
-      if (location.latitude != null && location.longitude != null) {
-        getPolyPoints(location.longitude!, location.latitude!);
-      }
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+        currentLocation = position;
+        sourceLocation = LatLng(position.latitude!, position.longitude!);
+        getPolyPoints(position.longitude!, position.latitude!);
+    }).catchError((e) {
+      debugPrint(e);
     });
 
-    location.onLocationChanged.distinct().listen(
-      (newLoc) async {
-        setState(() {
-          currentLocation = newLoc;
-        });
-          final GoogleMapController controller = await _controller.future;
-          controller.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
-            target: LatLng(newLoc.latitude!, newLoc.longitude!),
-            zoom: 16,
-          )));
-      }
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 5, 
     );
 
+    _positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position position) async {
+      setState(() {
+        currentLocation = position;
+      });
+      final GoogleMapController controller = await _controller.future;
+      controller.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(position.latitude!, position.longitude!),
+        zoom: 16,
+      )));
+    });
+
+  }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel();
+    super.dispose();
   }
 
   Future<void> getPolyPoints(double longi, double lati) async {
