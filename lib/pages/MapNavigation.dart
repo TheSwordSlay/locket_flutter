@@ -24,6 +24,10 @@ class _MapNavigationState extends State<MapNavigation> {
   Position? currentLocation;
   StreamSubscription<Position>? _positionStream;
 
+    // Animation variables
+  AnimationController? _animationController;
+  Animation<LatLng>? _animation;
+
   BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
 
   void getCurrentLocation() async {
@@ -47,9 +51,11 @@ class _MapNavigationState extends State<MapNavigation> {
         currentLocation = position;
       });
       final GoogleMapController controller = await _controller.future;
-      controller.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(position.latitude!, position.longitude!),
         zoom: 16,
+        bearing: position.heading ?? 0,  // Adds bearing (optional, based on heading)
+        tilt: 30,  // Adds tilt for a more dynamic view
       )));
     });
 
@@ -58,6 +64,7 @@ class _MapNavigationState extends State<MapNavigation> {
   @override
   void dispose() {
     _positionStream?.cancel();
+    _animationController?.dispose();
     super.dispose();
   }
 
