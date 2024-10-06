@@ -5,11 +5,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:locket_flutter/components/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapNavigation extends StatefulWidget {
   final double lat;
   final double long;
-  const MapNavigation({super.key, required this.lat, required this.long});
+  final String telp;
+  final String name;
+  const MapNavigation({super.key, required this.lat, required this.long, required this.telp, required this.name});
 
   @override
   State<MapNavigation> createState() => _MapNavigationState();
@@ -115,6 +118,13 @@ class _MapNavigationState extends State<MapNavigation> {
         centerTitle: true,
         backgroundColor: const Color(0xff211a2c),
         title: const Text("Order navigation", style: TextStyle(color: Color(0xffffaf36))),
+                  leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Color(0xffffaf36),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
       ),
       body: (currentLocation == null || sourceLocation == null) 
         ? const Center(child: Text("Loading navigation")) 
@@ -147,6 +157,61 @@ class _MapNavigationState extends State<MapNavigation> {
               _controller.complete(mapController);
             },
           ),
+        bottomNavigationBar: Container(
+          height: MediaQuery.of(context).size.height * 0.13,
+          width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5),
+        spreadRadius: 5,
+        blurRadius: 7,
+        offset: Offset(0, -3), // Shadow position
+      ),
+    ],
+  ),
+          // color: Colors.white,
+          
+          child: Column( 
+            children: [ 
+              Padding(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.013, bottom: MediaQuery.of(context).size.height * 0.013),
+                child:               Text(
+                "${widget.name}'s order location",
+                textAlign: TextAlign.center,
+                style: TextStyle( 
+                  fontWeight: FontWeight.bold,
+                  fontSize: MediaQuery.of(context).size.width * 0.047
+                ),
+                maxLines: 1
+              ),
+              ),
+                                  ElevatedButton(
+                      onPressed: () async {
+                                            final call = Uri.parse('tel:${widget.telp}');
+                    if (await canLaunchUrl(call)) {
+                      launchUrl(call);
+                    } else {
+                      throw 'Could not launch $call';
+                    }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffffaf36),
+                        fixedSize: Size(MediaQuery.of(context).size.width * 0.45, 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7.0),
+                        ),
+                      ),
+                      child: const Text("Call the customer", maxLines: 1, style: TextStyle( 
+                        color: Colors.white
+                      ),),
+                      
+                    ),
+            ],
+          )
+        ),
     );
   }
 }

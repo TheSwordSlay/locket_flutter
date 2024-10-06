@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
               ));
 
       await LocketAuth()
-          .signIn(emailTextController.text, passwordTextController.text);
+          .signIn(emailTextController.text.replaceAll(' ', ''), passwordTextController.text);
 
       // pop loading circle
       if (context.mounted) {

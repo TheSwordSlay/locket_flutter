@@ -115,7 +115,7 @@ class CashierItem extends StatelessWidget {
                         if (!hasPermission) return;
                         Navigator.push(
                           context, 
-                          MaterialPageRoute(builder: (context) => MapNavigation(lat: lat, long: long,))
+                          MaterialPageRoute(builder: (context) => MapNavigation(lat: lat, long: long, telp: handphone, name: nama,))
                         );
                       },
                       style: ElevatedButton.styleFrom(

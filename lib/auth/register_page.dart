@@ -33,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       // try register
-      LocketAuth().signUp(emailTextController.text, passwordTextController.text);
+      LocketAuth().signUp(emailTextController.text.replaceAll(' ', ''), passwordTextController.text);
 
       if(context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
