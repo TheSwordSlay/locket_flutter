@@ -52,10 +52,9 @@ class _MapNavigationState extends State<MapNavigation> {
       });
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(position.latitude!, position.longitude!),
-        zoom: 16,
-        bearing: position.heading ?? 0,  // Adds bearing (optional, based on heading)
-        tilt: 30,  // Adds tilt for a more dynamic view
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 16, 
+        tilt: 30,  
       )));
     });
 
@@ -95,7 +94,8 @@ class _MapNavigationState extends State<MapNavigation> {
   }
 
   void setCustomMarkerIcon() {
-    BitmapDescriptor.asset(const ImageConfiguration(size: Size(24, 24)), "assets/images/arrow.png").then((icon) {
+    BitmapDescriptor.asset(const ImageConfiguration(size: Size(24, 24)), "assets/images/arrow.png").then(
+      (icon) {
         currentLocationIcon = icon; 
       } 
     );
