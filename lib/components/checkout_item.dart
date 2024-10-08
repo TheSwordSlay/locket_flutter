@@ -43,14 +43,7 @@ class _CheckoutItemState extends State<CheckoutItem> {
                 "total": totalBefore-(widget.amount*widget.harga)
               }
             );
-            LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem+amountBefore);
-            // checkoutCollection.doc(widget.email).update(
-            //   {
-            //     "items": value,
-            //     "total": totalBefore-(widget.amount*widget.harga)
-            //   }
-            // );
-            // shopCollection.doc(widget.nama).update({"stock": jumlahItem+amountBefore});
+            LocketDatabase().increaseShopItem(widget.nama, amountBefore);
           }
         }
         setState(() {
@@ -91,14 +84,7 @@ class _CheckoutItemState extends State<CheckoutItem> {
                   "total": totalBefore - widget.harga
                 }
               );
-              LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem+1);
-              // checkoutCollection.doc(widget.email).update(
-              //   {
-              //     "items": value,
-              //     "total": totalBefore - widget.harga
-              //   }
-              // );
-              // shopCollection.doc(widget.nama).update({"stock": jumlahItem+1});
+              LocketDatabase().increaseShopItem(widget.nama, 1);
             } else {
               value.removeAt(i);
               LocketDatabase().updateCheckoutData(widget.email,                 
@@ -107,14 +93,7 @@ class _CheckoutItemState extends State<CheckoutItem> {
                   "total": totalBefore - widget.harga
                 }
               );
-              LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem+1);
-              // checkoutCollection.doc(widget.email).update(
-              //   {
-              //     "items": value,
-              //     "total": totalBefore - widget.harga
-              //   }
-              // );
-              // shopCollection.doc(widget.nama).update({"stock": jumlahItem+1});
+              LocketDatabase().increaseShopItem(widget.nama, 1);
             }
 
             

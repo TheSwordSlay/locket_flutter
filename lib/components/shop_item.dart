@@ -48,13 +48,13 @@ class _ShopItemState extends State<ShopItem> {
                 "amount": amountBefore + amount,
                 "imgLink": widget.imageLink
               };
+              LocketDatabase().decreaseShopItem(widget.nama, amount);
               LocketDatabase().updateCheckoutData(widget.email, 
                 {
                   "items": value,
                   "total": totalBefore+ (amount*widget.harga)
                 }
               );
-              LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem-amount);
               // checkoutCollection.doc(widget.email).update(
               //   {
               //     "items": value,
@@ -76,13 +76,13 @@ class _ShopItemState extends State<ShopItem> {
                   "amount": amount,
                   "imgLink": widget.imageLink
                 }];
+            LocketDatabase().decreaseShopItem(widget.nama, amount);
             LocketDatabase().updateCheckoutData(widget.email,               
               {
                 "items": newValue,
                 "total": totalBefore+(amount*widget.harga)
               }
             );
-            LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem-amount);
             // checkoutCollection.doc(widget.email).set(
             //   {
             //     "items": newValue,
@@ -96,6 +96,7 @@ class _ShopItemState extends State<ShopItem> {
         if(amount>jumlahItem) {
           showToast(message: "The item doesn't have enough stock");
         } else {
+          LocketDatabase().decreaseShopItem(widget.nama, amount);
           LocketDatabase().updateCheckoutData(widget.email,             
             {
               "items": [{
@@ -107,7 +108,6 @@ class _ShopItemState extends State<ShopItem> {
               "total": (amount*widget.harga)
             }
           );
-          LocketDatabase().updateShopItemData(widget.nama, "stock", jumlahItem-amount);
           // checkoutCollection.doc(widget.email).set(
           //   {
           //     "items": [{

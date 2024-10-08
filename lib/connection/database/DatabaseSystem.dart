@@ -11,7 +11,9 @@ abstract class DatabaseSystem<T> {
 
   Future finishOrder(String emailTarget);
 
-  Future<void> updateShopItemData(String namaItem, String field, newData);
+  Future<void> decreaseShopItem(String namaItem, int amount);
+
+  Future<void> increaseShopItem(String namaItem, int amount);
 
   Future<void> updateCheckoutData(String email, newData);
 

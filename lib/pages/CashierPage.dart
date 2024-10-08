@@ -22,7 +22,7 @@ class _CashierPageState extends State<CashierPage> {
         centerTitle: true,
         backgroundColor: const Color(0xff211a2c),
         title: const Text(
-          "Cashier",
+          "Driver menu",
           style: TextStyle(color: Color(0xffffaf36)),
         ),
         actions: [

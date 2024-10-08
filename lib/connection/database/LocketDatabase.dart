@@ -39,8 +39,13 @@ class LocketDatabase implements DatabaseSystem {
   }
 
   @override
-  Future<void> updateShopItemData(String namaItem, String field, newData) {
-    return shopCollection.doc(namaItem).update({field: newData});
+  Future<void> decreaseShopItem(String namaItem, int amount) {
+    return shopCollection.doc(namaItem).update({"stock": FieldValue.increment(-amount)});
+  }
+
+  @override
+  Future<void> increaseShopItem(String namaItem, int amount) {
+    return shopCollection.doc(namaItem).update({"stock": FieldValue.increment(amount)});
   }
   
   @override
