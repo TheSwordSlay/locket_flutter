@@ -22,21 +22,17 @@ class _ShopItemState extends State<ShopItem> {
 
   Future<void> inputData(int amount) async {
     var docSnapshot = await LocketDatabase().getCheckoutItemsData(widget.email);
-    // checkoutCollection.doc(widget.email).get();
     var shopSnapshot = await LocketDatabase().getShopItemData(widget.nama);
-    // shopCollection.doc(widget.nama).get();
     Map<String, dynamic> data = shopSnapshot.data()!;
     var jumlahItem = data['stock'];
 
     if(jumlahItem > 0) {
       if (docSnapshot.exists) {
         Map<String, dynamic>? data = docSnapshot.data();
-        var value = data?['items']; // <-- The value you want to retrieve. 
-        // Call setState if needed.
+        var value = data?['items'];
         bool needSet = true;
         var totalBefore = data?['total'];
         for (var i = 0; i < value.length; i++) {
-          // TO DO
           if(value[i]["nama"] == widget.nama) {
             int amountBefore = value[i]["amount"];
             if(amountBefore+amount > jumlahItem) {
@@ -55,14 +51,8 @@ class _ShopItemState extends State<ShopItem> {
                   "total": totalBefore+ (amount*widget.harga)
                 }
               );
-              // checkoutCollection.doc(widget.email).update(
-              //   {
-              //     "items": value,
-              //     "total": totalBefore+ (amount*widget.harga)
-              //   }
-              // );
-              // shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
               needSet = false;
+              showToast(message: "Added ${amount} of ${widget.nama} to checkout");
             }
           }
         }
@@ -83,13 +73,7 @@ class _ShopItemState extends State<ShopItem> {
                 "total": totalBefore+(amount*widget.harga)
               }
             );
-            // checkoutCollection.doc(widget.email).set(
-            //   {
-            //     "items": newValue,
-            //     "total": totalBefore+(amount*widget.harga)
-            //   }
-            // );
-            // shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
+            showToast(message: "Added ${amount} of ${widget.nama} to checkout");
           }
         }
       } else {
@@ -108,18 +92,7 @@ class _ShopItemState extends State<ShopItem> {
               "total": (amount*widget.harga)
             }
           );
-          // checkoutCollection.doc(widget.email).set(
-          //   {
-          //     "items": [{
-          //       "nama": widget.nama,
-          //       "harga": widget.harga,
-          //       "amount": amount,
-          //       "imgLink": widget.imageLink
-          //     }],
-          //     "total": (amount*widget.harga)
-          //   }
-          // );
-          // shopCollection.doc(widget.nama).update({"stock": jumlahItem-amount});
+          showToast(message: "Added ${amount} of ${widget.nama} to checkout");
         }
 
       }
